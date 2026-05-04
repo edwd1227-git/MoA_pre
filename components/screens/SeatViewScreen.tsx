@@ -1,6 +1,8 @@
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '@/lib/store'
+import { PERFORMANCES } from '@/lib/data'
 import { Star } from 'lucide-react'
 
 const SEAT_REVIEWS = [
@@ -49,8 +51,59 @@ const SECTION_COLORS: Record<string, string> = {
   A: '#95E1D3',
 }
 
+type SeatViewResult = {
+  title: string
+  link: string
+  description: string
+}
+
 export function SeatViewScreen() {
-  const { setScreen } = useApp()
+  const { setScreen, selectedPerformanceId } = useApp()
+  const [isLoadingSeatInfo, setIsLoadingSeatInfo] = useState(false)
+  const [seatInfoResults, setSeatInfoResults] = useState<SeatViewResult[]>([])
+
+  const selectedPerformance = useMemo(
+    () => PERFORMANCES.find((performance) => performance.id === selectedPerformanceId),
+    [selectedPerformanceId]
+  )
+
+  useEffect(() => {
+    const venue = selectedPerformance?.venue?.trim()
+    if (!venue) {
+      setSeatInfoResults([])
+      return
+    }
+
+    let isMounted = true
+
+    const fetchSeatInfo = async () => {
+      setIsLoadingSeatInfo(true)
+      try {
+        const response = await fetch(`/api/seat-view?venue=${encodeURIComponent(venue)}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch seat-view data')
+        }
+        const data = (await response.json()) as { results?: SeatViewResult[] }
+        if (isMounted) {
+          setSeatInfoResults(data.results ?? [])
+        }
+      } catch {
+        if (isMounted) {
+          setSeatInfoResults([])
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingSeatInfo(false)
+        }
+      }
+    }
+
+    fetchSeatInfo()
+
+    return () => {
+      isMounted = false
+    }
+  }, [selectedPerformance?.venue])
 
   return (
     <div className="page-fade-in pb-20">
@@ -66,46 +119,42 @@ export function SeatViewScreen() {
       </div>
 
       <div className="space-y-6 px-4 py-6">
-        {/* Theater Layout */}
-        <div className="space-y-4 rounded-lg bg-card p-6">
-          <h2 className="font-semibold text-foreground">무대 배치도</h2>
-          
-          <div className="bg-secondary/50 p-6 rounded-lg">
-            {/* Stage */}
-            <div className="mb-8 rounded-lg bg-gradient-to-b from-foreground/20 to-foreground/5 p-4 text-center">
-              <p className="text-sm font-semibold text-muted-foreground">STAGE</p>
-            </div>
+        <div className="space-y-4 rounded-lg border border-border bg-card p-6">
+          <h2 className="font-semibold text-foreground">공연장 좌석배치도</h2>
+          {selectedPerformance?.venue && (
+            <p className="text-sm text-muted-foreground">
+              {selectedPerformance.venue} 관련 공식/참고 정보를 모아봤어요.
+            </p>
+          )}
 
-            {/* Sections */}
-            <div className="space-y-4">
-              {['VIP', 'R', 'S', 'A'].map((section) => (
-                <div key={section} className="flex items-center gap-4">
-                  <div 
-                    className="h-12 w-16 rounded flex items-center justify-center font-semibold text-black"
-                    style={{ backgroundColor: SECTION_COLORS[section] }}
+          {isLoadingSeatInfo ? (
+            <div className="flex items-center gap-3 rounded-lg border border-border bg-background/60 p-4">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-[#D4AF37]" />
+              <p className="text-sm text-muted-foreground">좌석 정보를 불러오는 중...</p>
+            </div>
+          ) : seatInfoResults.length > 0 ? (
+            <div className="space-y-3">
+              {seatInfoResults.map((result) => (
+                <div
+                  key={result.link}
+                  className="space-y-2 rounded-lg border border-border bg-background/50 p-4"
+                >
+                  <h3 className="font-medium text-foreground">{result.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {result.description}
+                  </p>
+                  <button
+                    onClick={() => window.open(result.link, '_blank', 'noopener,noreferrer')}
+                    className="inline-flex rounded-md border border-[#D4AF37]/40 px-3 py-1.5 text-sm font-medium text-[#D4AF37] hover:bg-[#D4AF37]/10"
                   >
-                    {section}
-                  </div>
-                  <div className="flex flex-1 gap-1">
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="h-8 w-4 rounded border"
-                        style={{ 
-                          backgroundColor: `${SECTION_COLORS[section]}20`,
-                          borderColor: SECTION_COLORS[section]
-                        }}
-                      />
-                    ))}
-                  </div>
+                    링크 열기
+                  </button>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="text-xs text-muted-foreground">
-            <p className="text-center">각 섹션의 시야는 무대에서의 거리와 각도에 따라 다릅니다.</p>
-          </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">공식 정보를 찾을 수 없습니다</p>
+          )}
         </div>
 
         {/* Review Photos */}

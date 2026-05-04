@@ -11,7 +11,8 @@ export type Performance = {
   period: string
   duration: string
   priceRange: string
-  bookingUrl: string 
+  bookingUrl: string
+  youtubeUrl: string
 }
 
 export type ViewingRecord = {
@@ -49,6 +50,7 @@ export const PERFORMANCES: Performance[] = [
     duration: '170분 (인터미션 10분 포함)',
     priceRange: '55,000원 - 140,000원',
     bookingUrl: 'https://tickets.interpark.com/search?keyword=레미제라블',
+    youtubeUrl: '',
   },
   {
     id: '2',
@@ -64,6 +66,7 @@ export const PERFORMANCES: Performance[] = [
     duration: '165분 (인터미션 10분 포함)',
     priceRange: '60,000원 - 150,000원',
     bookingUrl: 'https://tickets.interpark.com/search?keyword=오페라의 유령',
+    youtubeUrl: '',
   },
   {
     id: '3',
@@ -79,6 +82,7 @@ export const PERFORMANCES: Performance[] = [
     duration: '150분 (인터미션 10분 포함)',
     priceRange: '30,000원 - 70,000원',
     bookingUrl: 'https://tickets.interpark.com/search?keyword=햄릿',
+    youtubeUrl: '',
   },
   {
     id: '4',
@@ -92,8 +96,9 @@ export const PERFORMANCES: Performance[] = [
     description: '1920년대 시카고의 재즈시대. 범죄, 유혹, 그리고 욕망이 얽혀있는 황금빛 밤의 도시. 세련된 음악과 춤으로 그려지는 매혹의 세계.',
     period: '2025.02.01 - 2025.08.31',
     duration: '155분 (인터미션 10분 포함)',
-    priceRange: '50,000원 - 130,000원' ,
+    priceRange: '50,000원 - 130,000원',
     bookingUrl: 'https://tickets.interpark.com/search?keyword=시카고',
+    youtubeUrl: '',
   },
   {
     id: '5',
@@ -109,6 +114,7 @@ export const PERFORMANCES: Performance[] = [
     duration: '140분 (인터미션 포함)',
     priceRange: '45,000원 - 120,000원',
     bookingUrl: 'https://tickets.interpark.com/search?keyword=지킬앤하이드',
+    youtubeUrl: '',
   },
   {
     id: '6',
@@ -124,6 +130,7 @@ export const PERFORMANCES: Performance[] = [
     duration: '170분 (인터미션 10분 포함)',
     priceRange: '55,000원 - 140,000원',
     bookingUrl: 'https://tickets.interpark.com/search?keyword=노트르담 드 파리',
+    youtubeUrl: '',
   },
 ]
 

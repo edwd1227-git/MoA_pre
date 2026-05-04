@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { ChevronRight, Bell, RotateCcw, Info } from 'lucide-react'
 
 export function SettingsScreen() {
-  const { setScreen, completeOnboarding } = useApp()
+  const { setScreen, resetOnboarding } = useApp()
   const [notificationSettings, setNotificationSettings] = useState({
     performance: true,
     booking: true,
@@ -13,6 +13,7 @@ export function SettingsScreen() {
   })
 
   const handleResetPreferences = () => {
+    resetOnboarding()
     setScreen('onboarding')
   }
 

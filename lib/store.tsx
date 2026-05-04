@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react'
 import type { ViewingRecord } from './data'
 import { SAMPLE_RECORDS } from './data'
 
-export type Screen = 'splash' | 'onboarding' | 'onboarding-internal' | 'home' | 'explore' | 'calendar' | 'mypage' | 'detail' | 'seatView' | 'settings'
+export type Screen = 'splash' | 'onboarding' | 'onboarding-internal' | 'home' | 'explore' | 'calendar' | 'mypage' | 'detail' | 'seatView' | 'settings' | 'guide'
 
 type AppState = {
   screen: Screen
@@ -18,6 +18,7 @@ type AppState = {
   viewingRecords: ViewingRecord[]
   setScreen: (screen: Screen, performanceId?: string | null) => void
   completeOnboarding: (tags: string[]) => void
+  resetOnboarding: () => void
   addRecord: (record: Omit<ViewingRecord, 'id'>) => void
   updateRecord: (id: string, record: Partial<ViewingRecord>) => void
   deleteRecord: (id: string) => void
@@ -48,6 +49,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setOnboardingComplete(true)
     setScreen('home')
   }, [setScreen])
+
+  const resetOnboarding = useCallback(() => {
+    setSelectedGenres([])
+    setSelectedMoods([])
+    setSelectedCast([])
+    setSelectedExperience([])
+    setUserTags([])
+    setOnboardingComplete(false)
+  }, [])
 
   const addRecord = useCallback((record: Omit<ViewingRecord, 'id'>) => {
     const newRecord: ViewingRecord = {
@@ -81,6 +91,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         viewingRecords,
         setScreen,
         completeOnboarding,
+        resetOnboarding,
         addRecord,
         updateRecord,
         deleteRecord,

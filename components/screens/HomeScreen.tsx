@@ -4,12 +4,24 @@ import { useApp } from '@/lib/store'
 import { PERFORMANCES, BEGINNER_PICKS, TRENDING } from '@/lib/data'
 import PerformanceCard from '../PerformanceCard'
 
+function getYoutubeThumbnail(url: string) {
+  const match = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^&?/]+)/
+  )
+  return match?.[1]
+    ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
+    : '/images/Moa_logo.png'
+}
+
 export default function HomeScreen() {
-    const { userTags, setScreen } = useApp()
+  const { userTags, setScreen } = useApp()
 
   const recommended = [...PERFORMANCES]
     .sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
     .slice(0, 4)
+  const monthlyRecommendedVideos = PERFORMANCES.filter((performance) =>
+    performance.youtubeUrl.trim()
+  )
 
   const displayTags = userTags.slice(0, 4)
 
@@ -44,6 +56,45 @@ export default function HomeScreen() {
           </div>
         )}
       </div>
+
+      {monthlyRecommendedVideos.length > 0 && (
+        <section className="mb-8 px-5">
+          <div className="mb-4">
+            <h2 className="title-card text-foreground">이번 달 추천 작품</h2>
+            <p className="text-badge text-muted-foreground mt-0.5">
+              공연 소개 영상을 먼저 보고 선택해보세요
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {monthlyRecommendedVideos.map((performance) => (
+              <div
+                key={`youtube-${performance.id}`}
+                className="overflow-hidden rounded-xl border border-border bg-card"
+              >
+                <img
+                  src={getYoutubeThumbnail(performance.youtubeUrl)}
+                  alt={`${performance.title} 유튜브 썸네일`}
+                  className="h-40 w-full object-cover"
+                />
+                <div className="space-y-3 p-4">
+                  <h3 className="text-base font-semibold text-foreground">
+                    {performance.title}
+                  </h3>
+                  <button
+                    onClick={() =>
+                      window.open(performance.youtubeUrl, '_blank', 'noopener,noreferrer')
+                    }
+                    className="inline-flex rounded-lg border border-[#D4AF37]/40 px-3 py-2 text-sm font-medium text-[#D4AF37] transition-colors hover:bg-[#D4AF37]/10"
+                  >
+                    영상 보러가기
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 나를 위한 추천 */}
       <section className="mb-8">
@@ -120,6 +171,7 @@ export default function HomeScreen() {
             <br />꼭 알아야 할 기본 에티켓과 팁
           </p>
           <button
+            onClick={() => setScreen('guide')}
             className="text-badge text-accent font-medium flex items-center gap-1"
           >
             읽어보기

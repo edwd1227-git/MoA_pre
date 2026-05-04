@@ -10,6 +10,7 @@ import MyPageScreen from '@/components/screens/MyPageScreen'
 import { DetailScreen } from '@/components/screens/DetailScreen'
 import { SeatViewScreen } from '@/components/screens/SeatViewScreen'
 import { SettingsScreen } from '@/components/screens/SettingsScreen'
+import { GuideScreen } from '@/components/screens/GuideScreen'
 import BottomNav from '@/components/BottomNav'
 
 function AppContent() {
@@ -41,6 +42,8 @@ function AppContent() {
         return <SeatViewScreen />
       case 'settings':
         return <SettingsScreen />
+      case 'guide':
+        return <GuideScreen />
       case 'explore':
         return <ExploreScreen />
       case 'calendar':
@@ -58,7 +61,7 @@ function AppContent() {
       <main className="page-fade-in">
         {renderScreen()}
       </main>
-      {!['detail', 'seatView', 'settings'].includes(screen) && <BottomNav />}
+      {!['detail', 'seatView', 'settings', 'guide'].includes(screen) && <BottomNav />}
     </div>
   )
 }
